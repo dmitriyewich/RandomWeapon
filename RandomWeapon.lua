@@ -420,6 +420,8 @@ function AddWeaponModel(this, modelIndex)
 	AddWeaponModel(this, modelIndex)
 end
 
+
+
 function RemoveWeaponModel(this, modelIndex)
 	if config.weapons[tostring(modelIndex)] ~= nil then
 		modelIndex = tbl_this[this]
@@ -429,7 +431,7 @@ function RemoveWeaponModel(this, modelIndex)
 end
 
 function main()
-	
+
 	if script.find("RandomChar") and not doesFileExist(getGameDirectory() .."\\modloader\\RandomChar\\RandomChar.ide") then thisScript():unload() end
 	if not doesFileExist(folder) then GeneratedIDE() end
 
@@ -458,7 +460,7 @@ function GeneratedIDE()
 
 	local t={}
 	for str in string.gmatch(standart_weap, "([^\n]+)") do
-		
+
 		local v_1, v_2, v_3 = tostring(str):match('^(.+),(.+,.+),(.+,.+,.+,.+)$')
 		-- print(v_3)
 		t[tonumber(v_1)] = v_3
@@ -467,7 +469,7 @@ function GeneratedIDE()
 	config.weapons = {}
 
 	local list = 'weap\n'
--- print(file)
+
 	for k, v in pairs(NameModel) do
 		local folder_dff = getGameDirectory() .."\\modloader\\RandomWeapon\\models\\" ..v.. "\\*.dff"
 		local search, file = findFirstFile(folder_dff)
@@ -483,7 +485,7 @@ function GeneratedIDE()
 			file = findNextFile(search)
 		end
 	end
-	
+
 	list = list .. 'end'
 
 	local file = io.open(folder, 'w+')
