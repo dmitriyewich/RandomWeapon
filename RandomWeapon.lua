@@ -2,7 +2,7 @@ script_name("RandomWeap")
 script_author("dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods", 'https://github.com/dmitriyewich/RandomWeapon')
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("0.1")
+script_version("0.2")
 
 local lffi, ffi = pcall(require, 'ffi')
 local lmemory, memory = pcall(require, 'memory')
@@ -18,6 +18,8 @@ local folder_custom =  getGameDirectory() .."\\modloader\\RandomWeapon\\CUSTOM.i
 changelog = [[
 	RandomWeapon v0.1
 		- Релиз
+	RandomWeapon v0.2
+		- Вроде исправилась проблема с неубиранием модели оружия при переключении на кулак
 ]]
 
 -- AUTHOR main hooks lib: RTD/RutreD(https://www.blast.hk/members/126461/)
@@ -414,7 +416,7 @@ function AddWeaponModel(this, modelIndex)
 			requestModel(need_id)
 			loadAllModelsNow()
 		end
-		tbl_this[this] = need_id
+		tbl_this[this] = {[getCurrentCharWeapon(getCharPointerHandle(this))] = need_id}
 		modelIndex = need_id
 	end
 	AddWeaponModel(this, modelIndex)
@@ -423,16 +425,15 @@ end
 
 
 function RemoveWeaponModel(this, modelIndex)
-	if config.weapons[tostring(modelIndex)] ~= nil then
-		modelIndex = tbl_this[this]
-		tbl_this[this] = nil
+	if config.weapons[tostring(modelIndex)] ~= nil and tbl_this[this] ~= nil then
+		modelIndex = tbl_this[this][getCurrentCharWeapon(getCharPointerHandle(this))]
 	end
 	RemoveWeaponModel(this, modelIndex)
 end
 
 function main()
 
-	if script.find("RandomChar") and not doesFileExist(getGameDirectory() .."\\modloader\\RandomChar\\RandomChar.ide") then thisScript():unload() end
+	if script.find("RandomChar") and not doesFileExist(getGameDirectory() .."\\modloader\\RandomChar\\RandomChar.txt") then thisScript():unload() end
 	if not doesFileExist(folder) then GeneratedIDE() end
 
 	repeat wait(0) until memory.read(0xC8D4C0, 4, false) == 9
@@ -462,7 +463,6 @@ function GeneratedIDE()
 	for str in string.gmatch(standart_weap, "([^\n]+)") do
 
 		local v_1, v_2, v_3 = tostring(str):match('^(.+),(.+,.+),(.+,.+,.+,.+)$')
-		-- print(v_3)
 		t[tonumber(v_1)] = v_3
 	end
 
